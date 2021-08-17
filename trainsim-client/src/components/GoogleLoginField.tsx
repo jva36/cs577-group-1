@@ -3,7 +3,7 @@ import { GoogleLogin, GoogleLogout } from "react-google-login";
 
 // You can create your own credential by going to https://console.cloud.google.com/ and
 // then searching for "Credentials". Follow the prompts to make an "OAuth client ID".
-const clientId = "980475465865-qu5scv4mr1qmqspcn7lj3ft910cgif96.apps.googleusercontent.com"
+const clientId = "252849607062-f8t3cao62rg9eehldia363tbrfflpmil.apps.googleusercontent.com"
 
 interface LoginState {
     isLoggedIn: boolean,
