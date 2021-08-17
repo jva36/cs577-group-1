@@ -3,7 +3,10 @@ package edu.drexel.trainsim.db.commands;
 import com.google.inject.Inject;
 
 import edu.drexel.trainsim.db.models.User;
+import org.sql2o.Connection;
 import org.sql2o.Sql2o;
+
+import java.util.List;
 
 public class GetOrCreateGoogleUserImpl implements GetOrCreateGoogleUser {
     private final Sql2o db;
@@ -16,14 +19,15 @@ public class GetOrCreateGoogleUserImpl implements GetOrCreateGoogleUser {
     @Override
     public User call(String email) {
         String sql = "SELECT id, email FROM users WHERE email = :email";
+        String insertSql = "INSERT INTO users(email) VALUES(:email)";
 
-        try (var con = this.db.open()) {
-            var res = con.createQuery(sql).addParameter("email", email).executeAndFetch(User.class);
+        try (Connection con = this.db.open()) {
+            List<User> res = con.createQuery(sql).addParameter("email", email).executeAndFetch(User.class);
 
             // There is a race condition here if we have more than one servers talking to the db.
             if (res.isEmpty()) {
-                sql = "INSERT INTO users(email) VALUES(:email) RETURNING id, email";
-                return con.createQuery(sql).addParameter("email", email).executeAndFetch(User.class).get(0);
+                con.createQuery(insertSql).addParameter("email", email).executeUpdate();
+                res = con.createQuery(sql).addParameter("email", email).executeAndFetch(User.class);
             }
 
             return res.get(0);
