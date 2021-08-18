@@ -21,6 +21,7 @@ public class GetOrCreateTravelerImpl implements GetOrCreateTraveler
     String sql = "SELECT id, firstName, lastName, email, phone" +
                  "  FROM travelers" +
                  " WHERE firstName = :firstName AND lastName = :lastName AND email = :email AND phone = :phone";
+    String insertSql = "INSERT INTO travelers(firstName, lastName, email, phone) VALUES(:firstName, :lastName, :email, :phone)";
 
     try (var con = this.db.open())
     {
@@ -29,10 +30,7 @@ public class GetOrCreateTravelerImpl implements GetOrCreateTraveler
       // There is a race condition here if we have more than one servers talking to the db.
       if (res.isEmpty())
       {
-        String sql1 = "INSERT INTO travelers(firstName, lastName, email, phone) VALUES(:firstName, :lastName, :email, :phone) RETURNING *";
-//        sql = "INSERT INTO travelers(firstName, lastName, email, phone) VALUES(:firstName, :lastName, :email, :phone) RETURNING id, firstName, lastName, email, phone";
-
-        con.createQuery(sql1).addParameter("firstName", traveler.getFirstName()).addParameter("lastName", traveler.getLastName()).addParameter("email", traveler.getEmail()).addParameter("phone", traveler.getPhone()).executeUpdate();
+        con.createQuery(insertSql).addParameter("firstName", traveler.getFirstName()).addParameter("lastName", traveler.getLastName()).addParameter("email", traveler.getEmail()).addParameter("phone", traveler.getPhone()).executeUpdate();
         res = con.createQuery(sql).addParameter("firstName", traveler.getFirstName()).addParameter("lastName", traveler.getLastName()).addParameter("email", traveler.getEmail()).addParameter("phone", traveler.getPhone()).executeAndFetch(Traveler.class);
       }
 
