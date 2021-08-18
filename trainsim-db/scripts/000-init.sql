@@ -5,6 +5,15 @@ CREATE TABLE users (
     email TEXT UNIQUE NOT NULL
 );
 
+CREATE TABLE travelers (
+    id SERIAL PRIMARY KEY,
+    firstName TEXT NOT NULL,
+    lastName TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    CONSTRAINT unq_travelers UNIQUE(firstName, lastName, email, phone)
+);
+
 CREATE TABLE otp.stops (
     id SERIAL PRIMARY KEY,
     otp_id VARCHAR(64) UNIQUE NOT NULL,
