@@ -19,7 +19,7 @@ export default (props: InputFieldProps) => <div className="field">
             type={props.htmlType && "text"}
             autoComplete={props.autoComplete}
             required={props.required}
-            value={props.value}
+            defaultValue={props.value}
             onChange={e => props.setValue(e.target.value)} />
         <span className="icon is-left"><i className={props.icon}></i></span>
     </div>
