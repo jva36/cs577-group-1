@@ -2,6 +2,8 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import React from "react";
 import Itinerary from "../models/Itinerary";
+import DetailsModal from "./DetailsModal";
+import ItinerarySearch from "../models/ItinerarySearch";
 
 // We use dayjs to help show times
 dayjs.extend(duration);
@@ -9,6 +11,7 @@ dayjs.extend(duration);
 export interface SearchResultItemProps {
     itinerary: Itinerary;
     select: () => void;
+    search: ItinerarySearch;
 };
 
 export default (props: SearchResultItemProps) => (
@@ -40,7 +43,9 @@ export default (props: SearchResultItemProps) => (
                             <p className="has-text-weight-medium is-family-secondary is-size-7">
                                 {getTransferText(props.itinerary.numTransfers)}
                             </p>
-                            <p className="has-text-weight-medium is-family-secondary is-size-7"><a href="#">Details</a></p>
+                            <div className="has-text-weight-medium is-family-secondary is-size-7">
+                                <DetailsModal itinerary={props.itinerary} search={props.search} />
+                            </div>
                         </div>
                     </div>
                     <div className="column is-5">
@@ -61,7 +66,7 @@ export default (props: SearchResultItemProps) => (
                 <div className="buttons">
                     <button
                         className="button is-fullwidth is-primary has-text-weight-bold"
-                        onClick={_ => props.select()} >
+                        onClick={_ => props.select()}>
                         Select
                     </button>
                 </div>

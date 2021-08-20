@@ -40,6 +40,7 @@ export default class SearchResultPage extends Component<SearchResultPageProps> {
                         key={i.id}
                         itinerary={i}
                         select={() => setPage(<TravelerInfoPage search={search} itinerary={i} setPage={setPage} />)}
+                        search={search}
                     />
                 )}
             </div>
