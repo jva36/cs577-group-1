@@ -61,7 +61,7 @@ export default (props: SearchResultItemProps) => (
             </div>
             <div className="column">
                 <div className="has-text-centered is-size-1 has-text-weight-light pb-4">
-                    $31
+                    {getPrice(props.search.travelers)}
                 </div>
                 <div className="buttons">
                     <button
@@ -93,4 +93,16 @@ function getTransferText(numTransfers: number) {
     }
 
     return `${numTransfers} Transfers`;
+}
+
+/**
+ *
+ * @param travelers - number of travelers that need tickets
+ * @param price - price of the ticket
+ *
+ * The price was hardcoded as 31 for all tickets. Price remains 31, however, function will accept a parameter
+ * for price if this data is provided at a later time.
+ */
+function getPrice(travelers: number, price: number = 31) {
+    return `$${travelers * price}`;
 }
