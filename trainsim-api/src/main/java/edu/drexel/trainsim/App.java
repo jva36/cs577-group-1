@@ -4,16 +4,13 @@ import com.google.gson.GsonBuilder;
 import com.google.inject.Guice;
 import com.zaxxer.hikari.HikariConfig;
 
-import edu.drexel.trainsim.web.TravelerController;
+import edu.drexel.trainsim.web.*;
 import org.sql2o.Sql2o;
 
 import edu.drexel.trainsim.db.DatabaseModule;
 import edu.drexel.trainsim.itinerary.ItineraryModule;
 import edu.drexel.trainsim.itinerary.otp.OtpClient;
 import edu.drexel.trainsim.itinerary.otp.Prepopulater;
-import edu.drexel.trainsim.web.ItineraryController;
-import edu.drexel.trainsim.web.StopController;
-import edu.drexel.trainsim.web.UserLoginController;
 import io.javalin.Javalin;
 import io.javalin.plugin.json.JavalinJson;
 
@@ -54,6 +51,8 @@ public class App {
         injector.getInstance(StopController.class).bindRoutes(app);
         injector.getInstance(UserLoginController.class).bindRoutes(app);
         injector.getInstance(TravelerController.class).bindRoutes(app);
+//        injector.getInstance(CheckOutController.class).bindRoutes(app);
+        injector.getInstance(PaymentController.class).bindRoutes(app);
 
         // Start the web server
         app.start(80);
