@@ -3,16 +3,16 @@ package edu.drexel.trainsim;
 import com.google.gson.GsonBuilder;
 import com.google.inject.Guice;
 import com.zaxxer.hikari.HikariConfig;
-
-import edu.drexel.trainsim.web.*;
+import edu.drexel.trainsim.order.OrderModule;
 import org.sql2o.Sql2o;
+import io.javalin.Javalin;
+import io.javalin.plugin.json.JavalinJson;
 
 import edu.drexel.trainsim.db.DatabaseModule;
 import edu.drexel.trainsim.itinerary.ItineraryModule;
 import edu.drexel.trainsim.itinerary.otp.OtpClient;
 import edu.drexel.trainsim.itinerary.otp.Prepopulater;
-import io.javalin.Javalin;
-import io.javalin.plugin.json.JavalinJson;
+import edu.drexel.trainsim.web.*;
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -51,8 +51,8 @@ public class App {
         injector.getInstance(StopController.class).bindRoutes(app);
         injector.getInstance(UserLoginController.class).bindRoutes(app);
         injector.getInstance(TravelerController.class).bindRoutes(app);
-//        injector.getInstance(CheckOutController.class).bindRoutes(app);
         injector.getInstance(PaymentController.class).bindRoutes(app);
+        injector.getInstance(CheckOutController.class).bindRoutes(app);
 
         // Start the web server
         app.start(80);

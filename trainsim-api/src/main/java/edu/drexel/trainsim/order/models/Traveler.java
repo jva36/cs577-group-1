@@ -1,4 +1,4 @@
-package edu.drexel.trainsim.db.models;
+package edu.drexel.trainsim.order.models;
 
 public class Traveler
 {

@@ -1,8 +1,7 @@
-package edu.drexel.trainsim.db.commands;
+package edu.drexel.trainsim.order.db;
 
 import com.google.inject.Inject;
-import edu.drexel.trainsim.db.models.Traveler;
-import edu.drexel.trainsim.db.models.User;
+import edu.drexel.trainsim.order.models.Traveler;
 import org.sql2o.Sql2o;
 
 public class GetOrCreateTravelerImpl implements GetOrCreateTraveler
