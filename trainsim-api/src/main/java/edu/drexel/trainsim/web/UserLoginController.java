@@ -21,6 +21,6 @@ public class UserLoginController implements Controller {
         // Notice that there is absolutely no server-side validation that this is real signed-in Google user.
         // We have to make a call to a Google API to verify this.
         var email = ctx.queryParam("email");
-        ctx.json(getOrCreateGoogleUser.call(email));
+        ctx.json(getOrCreateGoogleUser.call(email, "Registered"));
     }
 }

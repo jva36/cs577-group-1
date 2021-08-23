@@ -1,8 +1,8 @@
 package edu.drexel.trainsim.web;
 
 import com.google.inject.Inject;
-import edu.drexel.trainsim.db.commands.GetOrCreateTraveler;
-import edu.drexel.trainsim.db.models.Traveler;
+import edu.drexel.trainsim.order.db.GetOrCreateTraveler;
+import edu.drexel.trainsim.order.models.Traveler;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 

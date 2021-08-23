@@ -2,7 +2,8 @@ CREATE SCHEMA otp;
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    email TEXT UNIQUE NOT NULL
+    email TEXT UNIQUE NOT NULL,
+    type TEXT NOT NULL
 );
 
 CREATE TABLE travelers (
@@ -49,6 +50,24 @@ CREATE TABLE otp.places (
     sort INT NOT NULL,
     arrive_at TIMESTAMP WITH TIME ZONE NOT NULL,
     depart_at TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    userID int REFERENCES users (id) NOT NULL,
+    status TEXT NOT NULL DEFAULT 'Paid',
+    createdTime TIMESTAMP NOT NULL DEFAULT NOW(),
+    updatedTime TIMESTAMP,
+    address TEXT NOT NULL
+);
+
+CREATE TABLE tickets (
+    id SERIAL PRIMARY KEY,
+    orderID INT REFERENCES orders (id) NOT NULL,
+    travelerID INT REFERENCES travelers (id) NOT NULL,
+    itineraryID UUID NOT NULL,
+--    itineraryID UUID REFERENCES otp.itineraries (id) NOT NULL,
+    price REAL NOT NULL
 );
 
 CREATE TYPE otp.api_stop AS (id TEXT, name TEXT);
