@@ -6,6 +6,7 @@ import ProgressTracker from "./PurchaseTracker";
 import SearchHeader from "./SearchHeader";
 import SearchResultItem from "./SearchResultItem";
 import TravelerInfoPage from "./TravelerInfoPage";
+import {AuthContext} from "../contexts/AuthContext";
 
 interface SearchResultPageProps {
     search: ItinerarySearch;
@@ -16,6 +17,7 @@ interface SearchResultPageProps {
 export default class SearchResultPage extends Component<SearchResultPageProps> {
     constructor(props: SearchResultPageProps) {
         super(props);
+        SearchResultPage.contextType = AuthContext;
     }
 
     override render() {
