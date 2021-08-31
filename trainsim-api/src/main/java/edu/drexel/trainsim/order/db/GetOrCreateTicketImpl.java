@@ -1,12 +1,14 @@
 package edu.drexel.trainsim.order.db;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.google.inject.Inject;
 import edu.drexel.trainsim.order.models.Traveler;
 import org.sql2o.Sql2o;
 
 import edu.drexel.trainsim.order.models.Ticket;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class GetOrCreateTicketImpl implements GetOrCreateTicket
 {
@@ -19,19 +21,18 @@ public class GetOrCreateTicketImpl implements GetOrCreateTicket
   }
 
   @Override
-  public List<Ticket> create(int orderID, List<Traveler> travelers, List<Ticket> trips)
+  public List<Ticket> create(int orderID, List<Traveler> travelers, UUID itineraryID, float price)
   {
     List<Ticket> tickets = new ArrayList();
     try (var con = this.db.open())
     {
       String insertSql = "INSERT INTO tickets(orderID, travelerID, itineraryID, price) VALUES(:orderID, :travelerID, :itineraryID, :price)";
-      for (Ticket ticket : trips)
-        for (Traveler traveler : travelers)
-          con.createQuery(insertSql)
-            .addParameter("orderID", orderID)
-            .addParameter("travelerID", traveler.getId())
-            .addParameter("itineraryID", ticket.getItineraryID())
-            .addParameter("price", ticket.getPrice()).executeUpdate();
+      for (Traveler traveler : travelers)
+        con.createQuery(insertSql)
+         .addParameter("orderID", orderID)
+         .addParameter("travelerID", traveler.getId())
+         .addParameter("itineraryID", itineraryID)
+         .addParameter("price", price).executeUpdate();
       String sql = "SELECT id, orderID, travelerID, itineraryID, price" +
                    "  FROM tickets" +
                    " WHERE orderID = :orderID";

@@ -6,7 +6,7 @@ public class CheckOutRequest
 {
   private String paymentConfirmation;
   private int userID;
-  private List<Ticket> tickets;
+  private Ticket ticket;
   private List<Traveler> travelers;
   private Address address;
 
@@ -37,13 +37,13 @@ public class CheckOutRequest
     this.userID = userID;
   }
 
-  public List<Ticket> getTickets()
+  public Ticket getTicket()
   {
-    return tickets;
+    return ticket;
   }
-  public void setTickets(List<Ticket> tickets)
+  public void setTicket(Ticket ticket)
   {
-    this.tickets = tickets;
+    this.ticket = ticket;
   }
 
   public Address getAddress()

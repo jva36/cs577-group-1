@@ -1,6 +1,6 @@
-package edu.drexel.trainsim.user.commands;
+package edu.drexel.trainsim.db.commands;
 
-import edu.drexel.trainsim.user.models.User;
+import edu.drexel.trainsim.db.models.User;
 
 @FunctionalInterface
 public interface GetOrCreateGoogleUser {
