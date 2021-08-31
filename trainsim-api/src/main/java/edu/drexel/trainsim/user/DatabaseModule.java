@@ -1,4 +1,4 @@
-package edu.drexel.trainsim.db;
+package edu.drexel.trainsim.user;
 
 import com.google.gson.Gson;
 import com.google.inject.AbstractModule;
@@ -7,8 +7,8 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.sql2o.Sql2o;
 
-import edu.drexel.trainsim.db.commands.GetOrCreateGoogleUser;
-import edu.drexel.trainsim.db.commands.GetOrCreateGoogleUserImpl;
+import edu.drexel.trainsim.user.commands.GetOrCreateGoogleUser;
+import edu.drexel.trainsim.user.commands.GetOrCreateGoogleUserImpl;
 import edu.drexel.trainsim.itinerary.db.GetAllStops;
 import edu.drexel.trainsim.itinerary.db.GetAllStopsImpl;
 import edu.drexel.trainsim.order.db.*;
