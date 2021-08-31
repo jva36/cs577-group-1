@@ -5,14 +5,14 @@ import {Traveler} from "./Traveler";
 export default class Order {
     private readonly _paymentConfirmation: string;
     private readonly _userId: number;
-    private readonly _ticket: Ticket;
+    private readonly _tickets: Array<Ticket>;
     private readonly _travelers: Array<Traveler>;
     private readonly _address: Address;
 
-    constructor(paymentConfirmation: string, userId: number, ticket: Ticket, travelers: Array<Traveler>, address: Address) {
+    constructor(paymentConfirmation: string, userId: number, tickets: Array<Ticket>, travelers: Array<Traveler>, address: Address) {
         this._paymentConfirmation = paymentConfirmation;
         this._userId = userId;
-        this._ticket = ticket;
+        this._tickets = tickets;
         this._travelers = travelers;
         this._address = address;
 
@@ -28,7 +28,7 @@ export default class Order {
         return JSON.stringify({
             paymentConfirmation: this._paymentConfirmation,
             userId: this._userId,
-            ticket: this._ticket,
+            tickets: this._tickets,
             travelers: this._travelers,
             address: this._address
         });

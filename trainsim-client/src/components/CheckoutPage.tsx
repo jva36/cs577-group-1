@@ -69,15 +69,19 @@ export default class CheckoutPage extends Component<CheckoutPageProps, CheckoutP
     }
 
     submit() {
-        const price = getPrice(this.props.travelers.length); // Price is not yet included in any fetch-able data. For now use travelers * default price
-        const payment = new Payment(new CreditCard(this.state.cardNumber, this.state.cvv), price);
+        const price = 31; // Default price per ticket
+        const totalPrice = getPrice(this.props.travelers.length); // Price is not yet included in any fetch-able data. For now use travelers * default price = total
+        const payment = new Payment(new CreditCard(this.state.cardNumber, this.state.cvv), totalPrice);
         const { search, itinerary, travelers } = this.props;
         const { address, addressApt, city, state, zip, email } = this.state;
         this.paymentProvider.doPayment(payment, paymentResponse => {
             if (paymentResponse.code === 0) {
-                const ticket: Ticket = new Ticket(itinerary.id, price);
+                const tickets: Ticket[] = [];
+                travelers.forEach(() => {
+                    tickets.push(new Ticket(itinerary.id, price));
+                });
                 const orderAddress: Address = new Address(address, city, state, zip, addressApt);
-                const order: Order = new Order('paid', this.context.user.userId, ticket, travelers, orderAddress);
+                const order: Order = new Order('paid', this.context.user.userId, tickets, travelers, orderAddress);
                 this.checkoutProvider.doCheckout(order, orderResponse => {
                     this.props.setPage(<ConfirmationPage orderResponse={orderResponse} orderEmail={email} search={search} itinerary={itinerary} />)
                 });
