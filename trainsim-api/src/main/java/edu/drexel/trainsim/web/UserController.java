@@ -1,15 +1,15 @@
 package edu.drexel.trainsim.web;
 
 import com.google.inject.Inject;
-import edu.drexel.trainsim.db.commands.GetOrCreateGoogleUser;
+import edu.drexel.trainsim.user.commands.GetOrCreateGoogleUser;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
-public class UserLoginController implements Controller {
+public class UserController implements Controller {
     private final GetOrCreateGoogleUser getOrCreateGoogleUser;
 
     @Inject
-    public UserLoginController(GetOrCreateGoogleUser cmd) {
+    public UserController(GetOrCreateGoogleUser cmd) {
         this.getOrCreateGoogleUser = cmd;
     }
 

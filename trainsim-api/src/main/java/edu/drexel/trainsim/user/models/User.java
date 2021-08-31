@@ -1,4 +1,4 @@
-package edu.drexel.trainsim.db.models;
+package edu.drexel.trainsim.user.models;
 
 public class User {
     protected int id;
