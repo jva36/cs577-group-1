@@ -1,5 +1,7 @@
+/* global gapi */
 import React from "react";
 import { GoogleLogin, GoogleLogout } from "react-google-login";
+import User from "../models/User";
 
 // You can create your own credential by going to https://console.cloud.google.com/ and
 // then searching for "Credentials". Follow the prompts to make an "OAuth client ID".
@@ -11,8 +13,12 @@ interface LoginState {
     userId: number
 }
 
-export default class GoogleLoginField extends React.Component<{}, LoginState> {
-    constructor(props: {}) {
+interface GoogleLoginFieldProps {
+    user: (user: User) => void;
+}
+
+export default class GoogleLoginField extends React.Component<GoogleLoginFieldProps, LoginState> {
+    constructor(props: GoogleLoginFieldProps) {
         super(props);
         this.loginSuccess = this.loginSuccess.bind(this);
         this.loginFailure = this.loginFailure.bind(this);
@@ -25,15 +31,19 @@ export default class GoogleLoginField extends React.Component<{}, LoginState> {
 
         fetch(`/api/user?email=${email}`)
             .then(res => res.json())
-            .then(res => this.setState({
-                isLoggedIn: true,
-                name: response.profileObj.name,
-                userId: res.id
-            }));
+            .then(res => {
+                this.setState({
+                    isLoggedIn: true,
+                    name: response.profileObj.name,
+                    userId: res.id
+                });
+                this.props.user(new User(this.state.isLoggedIn, this.state.name, this.state.userId));
+            });
     }
 
     logout() {
-        this.setState({ isLoggedIn: false });
+        this.setState({ isLoggedIn: false, name: "", userId: -1 });
+        this.props.user(new User());
     }
 
     loginFailure(response: any) {

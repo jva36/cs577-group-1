@@ -1,16 +1,21 @@
 import React, { Component, ReactElement } from "react";
 import GoogleLoginField from "./GoogleLoginField";
 import HomePage from "./HomePage";
+import {AuthContext} from "../contexts/AuthContext";
+import User from "../models/User";
+
 
 interface AppState {
     currentPage: ReactElement;
+    user: User;
 }
 
 export default class App extends Component<{}, AppState> {
     constructor(props: {}) {
         super(props);
         this.setPage = this.setPage.bind(this);
-        this.state = { currentPage: <HomePage setPage={this.setPage} /> };
+        App.contextType = AuthContext;
+        this.state = { currentPage: <HomePage setPage={this.setPage} />, user: new User() };
     }
 
     setPage(page: ReactElement) {
@@ -28,17 +33,18 @@ export default class App extends Component<{}, AppState> {
                     </div>
                     <div className="navbar-menu" id="navbar">
                         <div className="navbar-end">
-                            <GoogleLoginField />
+                            <GoogleLoginField user={(user: User) => this.setState({user: user})} />
                         </div>
                     </div>
                 </nav>
-                {this.state.currentPage}
+                <AuthContext.Provider value={{user: this.state.user as any}}>
+                    {this.state.currentPage}
+                </AuthContext.Provider>
                 <footer className="footer has-background-white">
                     <nav className="level">
                         <div className="level-left">
                             <small className="level-item"><a className="has-text-dark" href="/">trainsim</a></small>
                             <small className="level-item">&copy; {new Date().getFullYear()}</small>
-
                         </div>
                         <div className="level-right">
                             <small className="level-item"><a className="has-text-dark" href="#">Privacy</a></small>

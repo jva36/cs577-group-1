@@ -2,6 +2,8 @@ package edu.drexel.trainsim.web;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import com.google.inject.Inject;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -44,6 +46,8 @@ public class CheckOutController implements Controller
     List<Traveler> travelers = new ArrayList();
     for (Traveler traveler : request.getTravelers())
       travelers.add(cmdCreateTraveler.call(traveler));
+    System.out.println(request.getTicket().getItineraryID());
+//    UUID uuid = UUID.fromString(request.getTicket().getItineraryID());
     List<Ticket> tickets = cmdCreateTicket.create(order.getId(), travelers, request.getTicket().getItineraryID(), request.getTicket().getPrice());
     ctx.json(new CheckOutResponse(order.getId(), request.getUserID(), tickets));
   }
