@@ -1,8 +1,8 @@
-package edu.drexel.trainsim.db.commands;
+package edu.drexel.trainsim.user.commands;
 
 import com.google.inject.Inject;
 
-import edu.drexel.trainsim.db.models.User;
+import edu.drexel.trainsim.user.models.User;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 

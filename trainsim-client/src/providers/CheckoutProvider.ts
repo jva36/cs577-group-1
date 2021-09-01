@@ -4,7 +4,7 @@ import {OrderResponse} from "../models/OrderResponse";
 export default class CheckoutProvider {
     doCheckout(orderDetails: Order, callback: (orderResponse: OrderResponse) => void) {
 
-        fetch(`/api/checkout`, {method: "POST", body: orderDetails.toJson()})
+        fetch(`/api/order/checkout`, {method: "POST", body: orderDetails.toJson()})
             .then(res => res.json())
             .then(res => res as CheckoutDto)
             .then(res => fromCheckoutDto(res))
