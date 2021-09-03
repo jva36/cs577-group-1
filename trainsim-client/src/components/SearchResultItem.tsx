@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
-import React from "react";
+import React, {CSSProperties} from "react";
 import Itinerary from "../models/Itinerary";
 import DetailsModal from "./DetailsModal";
 import ItinerarySearch from "../models/ItinerarySearch";
@@ -12,10 +12,11 @@ export interface SearchResultItemProps {
     itinerary: Itinerary;
     select: () => void;
     search: ItinerarySearch;
+    style: CSSProperties;
 };
 
 export default (props: SearchResultItemProps) => (
-    <div className="box">
+    <div className="box" style={props.style}>
         <div className="columns is-vcentered">
             <div className="column is-7">
                 <div className="columns is-vcentered">

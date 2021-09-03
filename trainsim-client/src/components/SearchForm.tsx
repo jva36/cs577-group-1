@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, {CSSProperties, ReactElement} from "react";
 import ItinerarySearch from "../models/ItinerarySearch";
 import Stop from "../models/Stop";
 import ItineraryProvider from "../providers/ItineraryProvider";
@@ -6,6 +6,9 @@ import DateField from "./DateField";
 import RangeDropdown from "./RangeDropdown";
 import SearchResultPage from "./SearchResultPage";
 import StopDropdown from "./StopDropdown";
+import Itinerary from "../models/Itinerary";
+import {ItineraryResults} from "../models/ItineraryResults";
+import {Trip} from "../models/Trip";
 
 interface SearchFormState {
     source?: Stop;
@@ -53,15 +56,26 @@ export default class SearchForm extends React.Component<SearchFormProps, SearchF
 
         const { source, target, departDate, returnDate, travelers, isRoundTrip } = this.state;
 
-        const search = isRoundTrip ?
-            ItinerarySearch.roundTrip(source!, target!, departDate, returnDate, travelers) :
-            ItinerarySearch.oneWay(source!, target!, departDate, travelers);
+        const search = ItinerarySearch.departureSearch(source!, target!, departDate, travelers);
 
+        const departures: ItineraryResults = new ItineraryResults(search, []);
         const { setPage } = this.props;
 
-        this.itineraryProvider.fetchItineraries(search, res =>
-            setPage(<SearchResultPage search={search} itineraries={res} setPage={setPage} />
-        ));
+        const trip = new Trip(search, isRoundTrip);
+
+        this.itineraryProvider.fetchItineraries(departures.search, res => {
+            departures.itineraries = res;
+            if (isRoundTrip) {
+                trip.returnDate = returnDate;
+                const returns: ItineraryResults = new ItineraryResults(ItinerarySearch.returnSearch(source!, target!, returnDate, travelers), []);
+                this.itineraryProvider.fetchItineraries(returns.search, response => {
+                    returns.itineraries = response;
+                    setPage(<SearchResultPage departures={departures} setPage={setPage} trip={trip} returns={returns} />);
+                });
+            } else {
+                setPage(<SearchResultPage departures={departures} setPage={setPage} trip={trip} />);
+            }
+        });
     }
 
     isValidSearch() {
@@ -70,14 +84,21 @@ export default class SearchForm extends React.Component<SearchFormProps, SearchF
     }
 
     override render() {
+        const tabStyle: CSSProperties = {borderBottomWidth: "5px", fontWeight: "bold"};
         return <div className="pt-5">
-            <div className="tabs is-centered">
+            <div className="tabs is-centered is-large">
                 <ul>
                     <li className={this.state.isRoundTrip ? "" : "is-active"}>
-                        <a onClick={_ => this.setState({ isRoundTrip: false })}>One-Way</a>
+                        <a style={tabStyle} onClick={_ => this.setState({ isRoundTrip: false })}>
+                            <span className="icon is-small"><i className="fas fa-long-arrow-alt-right"></i></span>
+                            <span>One-Way</span>
+                        </a>
                     </li>
                     <li className={this.state.isRoundTrip ? "is-active" : ""}>
-                        <a onClick={_ => this.setState({ isRoundTrip: true })}>Round-Trip</a>
+                        <a style={tabStyle} onClick={_ => this.setState({ isRoundTrip: true })}>
+                            <span className="icon is-small"><i className="fas fa-exchange-alt"></i></span>
+                            <span>Round-Trip</span>
+                        </a>
                     </li>
                 </ul>
             </div>

@@ -1,6 +1,4 @@
 import React, {Component, ReactElement} from "react";
-import Itinerary from "../models/Itinerary";
-import ItinerarySearch from "../models/ItinerarySearch";
 import PurchaseStage from "../models/PurchaseStage";
 import InputField from "./InputField";
 import NavButtonBar from "./NavButtonBar";
@@ -16,13 +14,11 @@ import CheckoutProvider from "../providers/CheckoutProvider";
 import Order from "../models/Order";
 import {Ticket} from "../models/Ticket";
 import {Address} from "../models/Address";
-import {Traveler} from "../models/Traveler";
+import {Trip} from "../models/Trip";
 
 export interface CheckoutPageProps {
-    search: ItinerarySearch;
-    itinerary: Itinerary;
     setPage: (page: ReactElement) => void;
-    travelers: Array<Traveler>;
+    trip: Trip;
 }
 
 interface CheckoutPageState {
@@ -39,6 +35,7 @@ interface CheckoutPageState {
     city: string;
     state: string;
     zip: string;
+    tickets: Ticket[];
 }
 
 export default class CheckoutPage extends Component<CheckoutPageProps, CheckoutPageState> {
@@ -60,40 +57,94 @@ export default class CheckoutPage extends Component<CheckoutPageProps, CheckoutP
             addressApt: '',
             city: 'Chicago',
             state: 'PA',
-            zip: '19000'
+            zip: '19000',
+            tickets: []
         };
         CheckoutPage.contextType = AuthContext;
         this.paymentProvider = new PaymentProvider();
         this.checkoutProvider = new CheckoutProvider();
+        this.createPayment = this.createPayment.bind(this);
+        this.createTickets = this.createTickets.bind(this);
         this.submit = this.submit.bind(this);
     }
 
+    override componentDidMount() {
+        this.createTickets();
+    }
+
+    createPayment(totalPrice: number): Payment {
+        const { cardNumber, cvv } = this.state;
+        const payment = new Payment(new CreditCard(cardNumber, cvv), totalPrice);
+        return payment;
+    }
+
+    createTickets(price: number = 31) {
+        const { trip } = this.props;
+        const tickets: Ticket[] = [];
+        trip.travelers.forEach(() => {
+            if (trip.departureItinerary != null) {
+                tickets.push(new Ticket(trip.departureItinerary.id, price));
+            }
+            if (trip.isRoundTrip && trip.returningItinerary != null) {
+                tickets.push(new Ticket(trip.returningItinerary.id, price));
+            }
+        });
+        this.setState({tickets: [...tickets]});
+    }
+
+    getTickets(): ReactElement[] {
+        const ticketBlocks = new Array<ReactElement>();
+        const { trip } = this.props;
+            if (trip.departureItinerary != null) {
+                ticketBlocks.push(<div key={trip.departureItinerary.id} className="tags has-addons has-text-weight-bold">
+                    <span className="tag">
+                        <span className="is-size-6">{trip.source}</span>
+                        <span className="icon is-size-6 mx-2">
+                            <i className="fas fa-long-arrow-alt-right"></i>
+                        </span>
+                        <span className="is-size-6">{trip.target}</span>
+                    </span>
+                    <span className="tag is-primary">x {trip.travelers.length}</span>
+                </div>);
+            }
+            if (trip.isRoundTrip && trip.returningItinerary != null) {
+                ticketBlocks.push(<div key={trip.returningItinerary.id} className="tags has-addons has-text-weight-bold">
+                    <span className="tag">
+                        <span className="is-size-6">{trip.source}</span>
+                        <span className="icon is-size-6 mx-2">
+                            <i className="fas fa-long-arrow-alt-left"></i>
+                        </span>
+                        <span className="is-size-6">{trip.target}</span>
+                    </span>
+                    <span className="tag is-primary">x {trip.travelers.length}</span>
+                </div>);
+            }
+        return ticketBlocks;
+    }
+
     submit() {
+        const { address, addressApt, city, state, zip, email, tickets } = this.state;
+        const {trip} = this.props;
         const price = 31; // Default price per ticket
-        const totalPrice = getPrice(this.props.travelers.length); // Price is not yet included in any fetch-able data. For now use travelers * default price = total
-        const payment = new Payment(new CreditCard(this.state.cardNumber, this.state.cvv), totalPrice);
-        const { search, itinerary, travelers } = this.props;
-        const { address, addressApt, city, state, zip, email } = this.state;
+        const totalPrice = getPrice(tickets.length); // Price is not yet included in any fetch-able data. For now use travelers * default price = total
+        const payment = this.createPayment(totalPrice);
+
         this.paymentProvider.doPayment(payment, paymentResponse => {
             if (paymentResponse.code === 0) {
-                const tickets: Ticket[] = [];
-                travelers.forEach(() => {
-                    tickets.push(new Ticket(itinerary.id, price));
-                });
                 const orderAddress: Address = new Address(address, city, state, zip, addressApt);
-                const order: Order = new Order('paid', this.context.user.userId, tickets, travelers, orderAddress);
+                const order: Order = new Order('paid', this.context.user.userId, tickets, trip.travelers, orderAddress);
                 this.checkoutProvider.doCheckout(order, orderResponse => {
-                    this.props.setPage(<ConfirmationPage orderResponse={orderResponse} orderEmail={email} search={search} itinerary={itinerary} />)
+                    this.props.setPage(<ConfirmationPage orderResponse={orderResponse} orderEmail={email} trip={trip} />)
                 });
             }
         });
     }
 
     override render() {
-        const {search, itinerary, setPage} = this.props;
+        const {trip, setPage} = this.props;
 
         return <div>
-            <SearchHeader search={search}/>
+            <SearchHeader trip={trip}/>
             <ProgressTracker currentStage={PurchaseStage.Checkout}/>
 
             <hr/>
@@ -102,7 +153,7 @@ export default class CheckoutPage extends Component<CheckoutPageProps, CheckoutP
                 <h2 className="title is-3">Checkout</h2>
                 <p>Please fill out the following billing information.</p>
                 <div className="columns">
-                    <div className="column is-8">
+                    <div className="column is-7">
                         <form>
                             <div className="columns">
                                 <div className="column">
@@ -286,25 +337,15 @@ export default class CheckoutPage extends Component<CheckoutPageProps, CheckoutP
                         <div className="box">
                             <div className="is-size-5 has-text-weight-bold">Order Summary</div>
                             <hr/>
-                            <div className="columns p-1">
-                                <div className="column has-text-weight-bold">
-                                    <p className="heading">Ticket</p>
-                                    <p>{search.source.name}
-                                        <span className="icon is-size-6"><i className="fas fa-long-arrow-alt-right"></i></span>
-                                        {search.target.name}</p>
-                                </div>
-                                <div className="column has-text-weight-bold has-text-right">
-                                    <p className="heading">Quantity</p>
-                                    <p>x {this.props.search.travelers}</p>
-                                </div>
-                            </div>
+                            <p className="heading">Tickets</p>
+                            {this.getTickets()}
                             <hr/>
                             <div className="columns p-1">
                                 <div className="column">
                                     <p className="">Fare</p>
                                 </div>
                                 <div className="column has-text-right">
-                                    <p className="">{`$${getPrice(this.props.search.travelers).toFixed(2)}`}</p>
+                                    <p className="">{`$${getPrice(this.state.tickets.length).toFixed(2)}`}</p>
                                 </div>
                             </div>
                             <hr/>
@@ -313,15 +354,21 @@ export default class CheckoutPage extends Component<CheckoutPageProps, CheckoutP
                                     <p className="">Total</p>
                                 </div>
                                 <div className="column has-text-weight-bold has-text-right">
-                                    <p className="">{`$${getPrice(this.props.search.travelers).toFixed(2)}`}</p>
+                                    <p className="">{`$${getPrice(this.state.tickets.length).toFixed(2)}`}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            {!this.context.user.isLoggedIn && (
+                <div className="notification is-warning">
+                    <strong>Warning!</strong> You are not logged in.
+                    <p>You may continue and check out as a guest or navigate to the login button at the top of the page.</p>
+                </div>
+            )}
             <NavButtonBar
-                onBack={() => setPage(<TravelerInfoPage search={search} itinerary={itinerary} setPage={setPage}/>)}
+                onBack={() => setPage(<TravelerInfoPage trip={trip} setPage={setPage}/>)}
                 onSubmit={() => this.submit()}
             />
         </div>
@@ -330,12 +377,12 @@ export default class CheckoutPage extends Component<CheckoutPageProps, CheckoutP
 
 /**
  *
- * @param travelers - number of travelers that need tickets
+ * @param tickets - number of tickets
  * @param price - price of the ticket
  *
  * The price was hardcoded as 31 for all tickets. Price remains 31, however, function will accept a parameter
  * for price if this data is provided at a later time.
  */
-function getPrice(travelers: number, price: number = 31) {
-    return (travelers * price);
+function getPrice(tickets: number, price: number = 31) {
+    return (tickets * price);
 }

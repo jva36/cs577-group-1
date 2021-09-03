@@ -2,15 +2,12 @@ import React, { Component } from "react";
 import ProgressTracker from "./PurchaseTracker";
 import PurchaseStage from "../models/PurchaseStage";
 import {OrderResponse} from "../models/OrderResponse";
-import ItinerarySearch from "../models/ItinerarySearch";
-import Itinerary from "../models/Itinerary";
-import TicketComponent from "./TicketComponent";
+import {Trip} from "../models/Trip";
 
 export interface ConfirmationPageProps {
     orderResponse: OrderResponse;
     orderEmail: string;
-    search: ItinerarySearch;
-    itinerary: Itinerary;
+    trip: Trip;
 }
 
 interface ConfirmationPageState {
@@ -19,7 +16,7 @@ interface ConfirmationPageState {
 
 export default class ConfirmationPage extends Component<ConfirmationPageProps, ConfirmationPageState> {
     override render() {
-        const { orderResponse, orderEmail, search, itinerary } = this.props;
+        const { orderResponse, orderEmail, trip } = this.props;
         return (
             <>
                 <ProgressTracker currentStage={PurchaseStage.Confirmation} />
@@ -31,14 +28,6 @@ export default class ConfirmationPage extends Component<ConfirmationPageProps, C
                         <p className="has-text-centered">Confirmation and a copy of your receipt will be sent to {orderEmail}</p>
                     </div>
                 </div>
-                <h3 className="title is-4">Tickets</h3>
-                {orderResponse.tickets.map(i =>
-                    <TicketComponent
-                        key={i.id}
-                        itinerary={itinerary}
-                        search={search}
-                    />
-                )}
             </>
         );
     }

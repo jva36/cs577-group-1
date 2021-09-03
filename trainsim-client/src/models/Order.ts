@@ -19,10 +19,6 @@ export default class Order {
         this.toJson = this.toJson.bind(this);
     }
 
-    get travelers() {
-        return this._travelers;
-    }
-
     public toJson() {
 
         return JSON.stringify({

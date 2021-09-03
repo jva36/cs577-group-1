@@ -1,11 +1,15 @@
 import React from "react";
 import InputField from "./InputField";
+import {Trip} from "../models/Trip";
 
 export interface TravelerFormProps {
-    traveler: (key: string, v: string ) => void;
+    trip: Trip;
+    travelerIndex: number;
 }
 
-export default (_: TravelerFormProps) => {
+export default (props: TravelerFormProps) => {
+    const {trip, travelerIndex} = props;
+
     return (
         <div>
             <div className="columns">
@@ -16,8 +20,9 @@ export default (_: TravelerFormProps) => {
                         htmlType="text"
                         icon="fas fa-user"
                         required={true}
-                        value=""
-                        setValue={v => _.traveler('firstName', v)}
+                        value={trip.travelers[travelerIndex]._firstName}
+                        key="firstName"
+                        setValue={v => trip.travelers[travelerIndex]._firstName = v}
                     />
                 </div>
                 <div className="column">
@@ -27,8 +32,8 @@ export default (_: TravelerFormProps) => {
                         htmlType="text"
                         icon="fas fa-user"
                         required={true}
-                        value=""
-                        setValue={v => _.traveler('lastName', v)}
+                        value={trip.travelers[travelerIndex]._lastName}
+                        setValue={v => trip.travelers[travelerIndex]._lastName = v}
                     />
                 </div>
             </div>
@@ -40,8 +45,8 @@ export default (_: TravelerFormProps) => {
                         htmlType="email"
                         icon="fas fa-at"
                         required={true}
-                        value=""
-                        setValue={v => _.traveler('email', v)}
+                        value={trip.travelers[travelerIndex]._email}
+                        setValue={v => trip.travelers[travelerIndex]._email = v}
                     />
                 </div>
                 <div className="column">
@@ -51,8 +56,8 @@ export default (_: TravelerFormProps) => {
                         htmlType="tel"
                         icon="fas fa-phone"
                         required={true}
-                        value=""
-                        setValue={v => _.traveler('phone', v)}
+                        value={trip.travelers[travelerIndex]._phone}
+                        setValue={v => trip.travelers[travelerIndex]._phone = v}
                     />
                 </div>
             </div>

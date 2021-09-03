@@ -1,55 +1,37 @@
-import React, {Component, ReactElement, useState} from "react";
-import Itinerary from "../models/Itinerary";
-import ItinerarySearch from "../models/ItinerarySearch";
+import React, {Component, ReactElement} from "react";
 import PurchaseStage from "../models/PurchaseStage";
 import CheckoutPage from "./CheckoutPage";
 import NavButtonBar from "./NavButtonBar";
 import ProgressTracker from "./PurchaseTracker";
 import SearchHeader from "./SearchHeader";
 import TravelerForm from "./TravelerForm";
-import {Traveler} from "../models/Traveler";
+import {Trip} from "../models/Trip";
 
 export interface TravelerInfoPageProps {
-    search: ItinerarySearch;
-    itinerary: Itinerary;
     setPage: (page: ReactElement) => void;
+    trip: Trip;
 }
 
-interface TravelerInfoPageState {
-    travelers: Traveler[];
-}
+interface TravelerInfoPageState {}
 
 export default class TravelerInfoPage extends Component<TravelerInfoPageProps, TravelerInfoPageState> {
     constructor(props: TravelerInfoPageProps) {
         super(props);
-        this.state = {
-            travelers: []
-        };
-        this.setTravelers = this.setTravelers.bind(this);
-    }
-
-    setTravelers(k: string, v: string, i: number) {
-        const arrI = this.state.travelers[i-1] as any;
-        arrI[k] = v;
     }
 
     override render() {
-        const { search, itinerary, setPage } = this.props;
-
+        const { trip, setPage } = this.props;
         const travelerBlocks = new Array<ReactElement>();
 
-        for (let i = 1; i <= search.travelers; i++) {
-            this.state.travelers.push({firstName: '', lastName: '', email: '', phone: ''});
+        for (let i = 1; i <= trip.travelers.length; i++) {
             travelerBlocks.push(<div key={i} className="block pt-5">
                 <h3 className="title is-5">Traveler {i}</h3>
-                <TravelerForm traveler={(k: string, v: string) => {
-                    this.setTravelers(k, v, i);
-                }} />
+                <TravelerForm trip={trip} travelerIndex={i - 1} />
             </div>);
         }
 
         return <div>
-            <SearchHeader search={search} />
+            <SearchHeader trip={trip} />
             <ProgressTracker currentStage={PurchaseStage.EnterTravelerInfo} />
 
             <hr />
@@ -61,7 +43,7 @@ export default class TravelerInfoPage extends Component<TravelerInfoPageProps, T
             </div>
             <NavButtonBar
                 onBack={() => console.log("Back")}
-                onNext={() => setPage(<CheckoutPage search={search} itinerary={itinerary} setPage={setPage} travelers={this.state.travelers} />)}
+                onNext={() => setPage(<CheckoutPage trip={trip} setPage={setPage} />)}
             />
         </div>
     }
